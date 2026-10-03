@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="list">
+    <p th:if="${#lists.isEmpty(recipes)}" class="empty-state">
+        No recipes yet — add your first one above.
+    </p>
+    <th:block th:each="recipe : ${recipes}">
+        <div th:replace="~{::card}"></div>
+    </th:block>
+</th:block>
+
+<div th:fragment="card" class="recipe-card" th:id="'recipe-' + ${recipe.id}">
+    <h3 th:text="${recipe.name}">Recipe name</h3>
+    <p class="recipe-description" th:text="${recipe.description}">Description</p>
+    <p class="recipe-meta">
+        <span th:if="${recipe.prepTimeMinutes}" th:text="${recipe.prepTimeMinutes} + ' min'">30 min</span>
+        <span th:if="${recipe.servings}" th:text="${recipe.servings} + ' servings'">4 servings</span>
+    </p>
+    <div class="card-actions">
+        <a class="btn btn-link" th:href="@{/recipes/{id}(id=${recipe.id})}">View / Ingredients</a>
+        <button class="btn btn-small"
+                th:hx-get="@{/recipes/{id}/edit(id=${recipe.id})}"
+                hx-target="closest .recipe-card"
+                hx-swap="outerHTML">
+            Edit
+        </button>
+        <button class="btn btn-small btn-danger"
+                th:hx-delete="@{/recipes/{id}(id=${recipe.id})}"
+                hx-target="closest .recipe-card"
+                hx-swap="delete"
+                hx-confirm="Delete this recipe and all its ingredients?">
+            Delete
+        </button>
+    </div>
+</div>
+
+<form th:fragment="form"
+      class="recipe-card recipe-form"
+      th:id="${isNew} ? 'recipe-form-new' : 'recipe-' + ${recipe.id}"
+      th:hx-post="${isNew} ? @{/recipes} : null"
+      th:hx-put="${isNew} ? null : @{/recipes/{id}(id=${recipe.id})}"
+      th:hx-target="${isNew} ? '#recipe-list' : 'this'"
+      th:hx-swap="${isNew} ? 'innerHTML' : 'outerHTML'">
+
+    <label>
+        Name
+        <input type="text" name="name" th:value="${recipe.name}" required maxlength="255"/>
+    </label>
+    <label>
+        Description
+        <textarea name="description" rows="2" th:text="${recipe.description}"></textarea>
+    </label>
+    <label>
+        Instructions
+        <textarea name="instructions" rows="6" placeholder="Step 1: ...&#10;Step 2: ..." th:text="${recipe.instructions}"></textarea>
+    </label>
+    <label>
+        Prep time (minutes)
+        <input type="number" name="prepTimeMinutes" min="0" th:value="${recipe.prepTimeMinutes}"/>
+    </label>
+    <label>
+        Servings
+        <input type="number" name="servings" min="1" th:value="${recipe.servings}"/>
+    </label>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" th:text="${isNew} ? 'Create' : 'Save'">Save</button>
+
+        <button type="button" class="btn btn-small" th:if="${isNew}"
+                hx-get="/recipes/new-button"
+                hx-target="#recipe-form-container"
+                hx-swap="innerHTML">
+            Cancel
+        </button>
+        <button type="button" class="btn btn-small" th:unless="${isNew}"
+                th:hx-get="@{/recipes/{id}/card(id=${recipe.id})}"
+                hx-target="closest .recipe-card"
+                hx-swap="outerHTML">
+            Cancel
+        </button>
+    </div>
+</form>
+
+<button th:fragment="newButton" class="btn btn-primary"
+        hx-get="/recipes/new"
+        hx-target="#recipe-form-container"
+        hx-swap="innerHTML">
+    + New Recipe
+</button>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="list">
+    <tr th:if="${#lists.isEmpty(ingredients)}">
+        <td colspan="4" class="empty-state">No ingredients yet — add the first one below.</td>
+    </tr>
+    <th:block th:each="ingredient : ${ingredients}">
+        <tr th:replace="~{::row}"></tr>
+    </th:block>
+</th:block>
+
+<tr th:fragment="row" class="ingredient-row" th:id="'ingredient-' + ${ingredient.id}">
+    <td th:text="${ingredient.name}">Ingredient</td>
+    <td th:text="${ingredient.quantity}">1</td>
+    <td th:text="${ingredient.unit}">unit</td>
+    <td class="row-actions">
+        <button class="btn btn-small"
+                th:hx-get="@{/recipes/{recipeId}/ingredients/{id}/edit(recipeId=${recipeId},id=${ingredient.id})}"
+                hx-target="closest .ingredient-row"
+                hx-swap="outerHTML">
+            Edit
+        </button>
+        <button class="btn btn-small btn-danger"
+                th:hx-delete="@{/recipes/{recipeId}/ingredients/{id}(recipeId=${recipeId},id=${ingredient.id})}"
+                hx-target="closest .ingredient-row"
+                hx-swap="delete"
+                hx-confirm="Delete this ingredient?">
+            Delete
+        </button>
+    </td>
+</tr>
+
+<tr th:fragment="form" class="ingredient-row ingredient-form-row"
+    th:id="${isNew} ? 'ingredient-form-new' : 'ingredient-' + ${ingredient.id}">
+    <td colspan="4">
+        <form class="ingredient-form"
+              th:hx-post="${isNew} ? @{/recipes/{recipeId}/ingredients(recipeId=${recipeId})} : null"
+              th:hx-put="${isNew} ? null : @{/recipes/{recipeId}/ingredients/{id}(recipeId=${recipeId},id=${ingredient.id})}"
+              th:hx-target="${isNew} ? '#ingredient-list' : 'closest .ingredient-row'"
+              th:hx-swap="${isNew} ? 'innerHTML' : 'outerHTML'">
+
+            <input type="text" name="name" placeholder="Ingredient name" th:value="${ingredient.name}" required maxlength="255"/>
+            <input type="number" step="any" name="quantity" placeholder="Qty" th:value="${ingredient.quantity}"/>
+            <input type="text" name="unit" placeholder="Unit (g, cups...)" th:value="${ingredient.unit}" maxlength="50"/>
+
+            <button type="submit" class="btn btn-small btn-primary" th:text="${isNew} ? 'Add' : 'Save'">Save</button>
+
+            <button type="button" class="btn btn-small" th:if="${isNew}"
+                    th:hx-get="@{/recipes/{recipeId}/ingredients/new-button(recipeId=${recipeId})}"
+                    hx-target="#ingredient-form-container"
+                    hx-swap="innerHTML">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-small" th:unless="${isNew}"
+                    th:hx-get="@{/recipes/{recipeId}/ingredients/{id}/row(recipeId=${recipeId},id=${ingredient.id})}"
+                    hx-target="closest .ingredient-row"
+                    hx-swap="outerHTML">
+                Cancel
+            </button>
+        </form>
+    </td>
+</tr>
+
+<button th:fragment="newButton" class="btn btn-primary"
+        th:hx-get="@{/recipes/{recipeId}/ingredients/new(recipeId=${recipeId})}"
+        hx-target="#ingredient-form-container"
+        hx-swap="innerHTML">
+    + Add Ingredient
+</button>
+
+</body>
+</html>

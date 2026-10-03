@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${recipe.name} + ' - Recipe Box'">Recipe - Recipe Box</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="page-header">
+    <h1>🍳 Recipe Box</h1>
+    <a class="btn btn-link" th:href="@{/}">&larr; Back to all recipes</a>
+</header>
+
+<main class="container">
+
+    <section class="panel">
+        <h2 th:text="${recipe.name}">Recipe name</h2>
+        <p class="recipe-description" th:text="${recipe.description}">Description</p>
+        <p class="recipe-meta">
+            <span th:if="${recipe.prepTimeMinutes}" th:text="${recipe.prepTimeMinutes} + ' min prep'">30 min prep</span>
+            <span th:if="${recipe.servings}" th:text="${recipe.servings} + ' servings'">4 servings</span>
+        </p>
+    </section>
+
+    <section class="panel" th:if="${recipe.instructions}">
+        <h2>Instructions</h2>
+        <p class="recipe-instructions" th:text="${recipe.instructions}"></p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>Ingredients</h2>
+        </div>
+
+        <div id="ingredient-form-container">
+            <div th:replace="~{fragments/ingredient-fragments :: newButton}"></div>
+        </div>
+
+        <table class="ingredient-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="ingredient-list">
+                <div th:replace="~{fragments/ingredient-fragments :: list}"></div>
+            </tbody>
+        </table>
+    </section>
+
+</main>
+
+</body>
+</html>
