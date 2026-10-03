@@ -41,9 +41,9 @@
               th:hx-target="${isNew} ? '#ingredient-list' : 'closest .ingredient-row'"
               th:hx-swap="${isNew} ? 'innerHTML' : 'outerHTML'">
 
-            <input type="text" name="name" placeholder="Ingredient name" th:value="${ingredient.name}" required maxlength="255"/>
-            <input type="number" step="any" name="quantity" placeholder="Qty" th:value="${ingredient.quantity}"/>
-            <input type="text" name="unit" placeholder="Unit (g, cups...)" th:value="${ingredient.unit}" maxlength="50"/>
+            <input type="text" name="name" placeholder="Ingredient name" th:value="${ingredient.name}" required maxlength="255" aria-label="Ingredient name"/>
+            <input type="number" step="any" name="quantity" placeholder="Qty" th:value="${ingredient.quantity}" aria-label="Ingredient quantity"/>
+            <input type="text" name="unit" placeholder="Unit (g, cups...)" th:value="${ingredient.unit}" maxlength="50" aria-label="Ingredient unit"/>
 
             <button type="submit" class="btn btn-small btn-primary" th:text="${isNew} ? 'Add' : 'Save'">Save</button>
 
